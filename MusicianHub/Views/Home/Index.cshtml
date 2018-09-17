@@ -1,0 +1,51 @@
+﻿@model IEnumerable<MusicianHub.Models.Gig>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<ul class="gigs">
+    @foreach(var gig in Model)
+    {
+        <li>
+            <div class="date">
+                <div class="month">
+                    @gig.DateTime.ToString("MMM")
+                </div>
+                <div class="day">
+                    @gig.DateTime.ToString("d ")@*remove the space after the "d" to format the date as m/d/y*@
+                </div>
+            </div>   
+            <div class="details">
+                <span class="artist">
+                    @gig.Artist.Name
+                </span>
+                <span class="genre">
+                    @gig.Genre.Name
+                </span>
+                <button data-gig-id="@gig.Id" class="btn btn-default btn-sm pull-right js-toggle-attendance">Going?</button> @*the classes are bootstrap classes*@
+            </div>
+        </li>
+    }
+</ul>
+
+@section scripts
+{
+    <script>
+        // jquery/javascript
+        $(document).ready(function() {
+            $(".js-toggle-attendance").click(function (e) {
+                var button = $(e.target); // 'e' for event, find target(source) of event
+                $.post("/api/attendances", { "": button.attr("data-gig-id") })
+                    .done(function() {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    })
+                    .fail(function() {
+                        alert("Something failed!");
+                    });
+            });
+        });
+    </script>
+}
